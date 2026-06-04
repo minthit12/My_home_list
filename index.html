@@ -105,9 +105,15 @@
 </div>
 
 <script>
-    // Firebase Configuration ချိတ်ဆက်မှုအပိုင်း
+    // Firebase Configuration ချိတ်ဆက်မှုအပိုင်း (သင့်သော့ချက်များ ထည့်သွင်းပြီး)
     const firebaseConfig = {
-        databaseURL: "https://myhomelist-6550a-default-rtdb.firebaseio.com"
+        apiKey: "AIzaSyDqvRL09zTon8fMe-7Ve2yreXv_ah3lu14",
+        authDomain: "myhomelist-6550a.firebaseapp.com",
+        databaseURL: "https://myhomelist-6550a-default-rtdb.firebaseio.com",
+        projectId: "myhomelist-6550a",
+        storageBucket: "myhomelist-6550a.firebasestorage.app",
+        messagingSenderId: "98399068453",
+        appId: "1:98399068453:web:63b010b4ad071980ddffc"
     };
     
     // Firebase စတင်ကနဦးပြုလုပ်ခြင်း
@@ -115,7 +121,7 @@
     const database = firebase.database();
     const recordsRef = database.ref('records');
 
-    let db = []; // အွန်လိုင်းမှ ဒေတာများ သိမ်းဆည်းရန် Array
+    let db = []; 
     let screenHistory = ['homeScreen']; 
 
     const now = new Date();
@@ -149,7 +155,6 @@
                 type: document.getElementById('typeInput').value
             };
             
-            // Firebase Online Database သို့ လှမ်းပို့သိမ်းဆည်းခြင်း
             recordsRef.push(entry)
                 .then(() => {
                     alert("အွန်လိုင်းပေါ်သို့ သိမ်းဆည်းပြီးပါပြီ");
@@ -166,8 +171,6 @@
     function updateMainUI() {
         updateDataLists();
         updateMonthlyReport();
-        
-        // ဖွင့်ထားဆဲ screen အလိုက် live တိုးလာအောင် ပြန် Render လုပ်ပေးခြင်း
         if(screenHistory[screenHistory.length - 1] === 'nameReportScreen') renderNameReport();
         if(screenHistory[screenHistory.length - 1] === 'detailReportScreen') renderDetailReport();
     }
