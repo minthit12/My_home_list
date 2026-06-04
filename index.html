@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="my">
 <head>
@@ -38,7 +39,11 @@
         .detail-list { padding: 10px; background: #f1f1f1; border-radius: 0 0 4px 4px; font-size: 18px; display: none; }
         .detail-item { border-bottom: 1px solid #ccc; padding: 8px 0; display: flex; justify-content: space-between; gap: 10px; }
         .balance-box { background: var(--sky); color: white; padding: 15px; text-align: center; border-radius: 4px; margin-top: 15px; font-size: 20px; font-weight: bold; }
-        .sub-name { font-weight: bold; color: #333; background: #e2e2e2; padding: 5px 8px; border-radius: 3px; margin-top: 10px; display: block; }
+        
+        /* Main Home Sub-name Accordion Item Box Styling */
+        .sub-name-block { margin-bottom: 8px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+        .sub-name-click { font-weight: bold; color: #333; background: #e2e2e2; padding: 8px; border-radius: 4px; margin-top: 8px; display: flex; justify-content: space-between; cursor: pointer; }
+        .sub-name-detail-box { display: none; padding: 5px 10px; background: #fafafa; border-left: 3px solid #666; margin-top: 2px; }
 
         .name-summary-line { padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; justify-content: space-between; font-weight: bold; }
         .name-summary-line:last-child { border-bottom: none; }
@@ -220,23 +225,50 @@
         renderMainDetails('expenseDetails', filtered.filter(i => i.type === 'ထွက်ငွေ'));
     }
 
+    // ပင်မစာမျက်နှာရှိ "လအလိုက်အသေးစိတ်" ကို ပြုပြင်ထားသော Function
     function renderMainDetails(containerId, dataList) {
         const container = document.getElementById(containerId);
-        if(dataList.length === 0) { container.innerHTML = "စာရင်းမရှိပါ။"; return; }
+        if(dataList.length === 0) { container.innerHTML = "<div style='padding:10px;'>စာရင်းမရှိပါ။</div>"; return; }
         const grouped = {};
         dataList.forEach(item => {
             if(!grouped[item.name]) grouped[item.name] = { total: 0, items: [] };
             grouped[item.name].total += item.amount;
             grouped[item.name].items.push(item);
         });
+        
         let html = '';
+        let index = 0;
         for(let name in grouped) {
-            html += `<span class="sub-name">${name} (စုစုပေါင်း: ${grouped[name].total.toLocaleString()})</span>`;
+            index++;
+            const blockId = `${containerId}_block_${index}`;
+            
+            html += `
+                <div class="sub-name-block">
+                    <div class="sub-name-click" onclick="toggleHomeSubDetail('${blockId}')">
+                        <span>👤 ${name} (စုစုပေါင်း)</span>
+                        <span>${grouped[name].total.toLocaleString()} ▼</span>
+                    </div>
+                    <div id="${blockId}" class="sub-name-detail-box">`;
+            
             grouped[name].items.forEach(item => {
-                html += `<div class="detail-item"><span>${item.date ? item.date.split('-').reverse().join('.') : '-'} | ${item.detail}</span><span>${item.amount.toLocaleString()}</span></div>`;
+                html += `
+                    <div class="detail-item">
+                        <span>${item.date ? item.date.split('-').reverse().join('.') : '-'} | ${item.detail}</span>
+                        <span>${item.amount.toLocaleString()}</span>
+                    </div>`;
             });
+            
+            html += `
+                    </div>
+                </div>`;
         }
         container.innerHTML = html;
+    }
+
+    // ပင်မစာမျက်နှာ၏ စုစုပေါင်းအမည်များကို နှိပ်မှ အသေးစိတ်ပွင့်ရန် Toggle Function
+    function toggleHomeSubDetail(id) {
+        const el = document.getElementById(id);
+        el.style.display = (el.style.display === 'block') ? 'none' : 'block';
     }
 
     function showAllMonthlyBalances() {
@@ -320,7 +352,7 @@
         container.innerHTML = html || "စာရင်းမရှိသေးပါ။";
     }
 
-    // သီးသန့် အမည်အလိုက်ကြည့်ရန် စာမျက်နှာအတွက် Edit / Delete ခလုတ်ထည့်သည့်နေရာ
+    // သီးသန့် "အမည်အလိုက်ကြည့်ရန်" အတွက်သာ Edit / Delete ပါဝင်သော အသေးစိတ် Rows ပြသခြင်း
     function renderItemDetailRowsWithName(items) {
         if(items.length === 0) return `<div style="padding:10px; color:#999; font-size:14px;">စာရင်းမရှိပါ။</div>`;
         return items.map(i => `
